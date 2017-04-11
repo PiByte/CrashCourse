@@ -25,7 +25,7 @@ class Car
 
   def Reset()
     @x = -30
-    @y = Random.rand(500)
+    @y = Random.rand(50..450)
   end
 
   def GetSpeed()
@@ -44,8 +44,8 @@ class GameState
     @playerSpeed = 0
 
     # Car properties
-    @playerCarID = 23
-    @playerTopSpeed = 10
+    @playerCarID = 24
+    @playerTopSpeed = 20
     @playerAccRate = 0.5
     @playerDecRate = 1
     @playerTurnSpeed = 0.1
@@ -77,7 +77,7 @@ class GameState
     puts "# of cars: " + num.to_s()
 
     num.times do
-      temp = Car.new(Random.rand(450), Random.rand(450), GenerateCar())
+      temp = Car.new(Random.rand(50..450), Random.rand(50..450), GenerateCar())
       @arrayOfCars.push(temp)
     end
   end
@@ -153,10 +153,14 @@ class GameState
 
         @playerX = 20
         @playerY = 20
-        @playerSpeed = 0
-        @playerRot = -67
 
-        @window.GetManager().ChangeState(4)
+        @window.SetGameFlags(@playerSpeed, @playerRot, @isItKnown, false, @window.GetGameFlags(4), @window.GetGameFlags(5), @window.GetGameFlags(6))
+
+        # Reset
+        @playerRot = -67.5
+        @playerSpeed = 0
+
+        @window.GetManager().ChangeState(2)
       end
     end
 
@@ -182,10 +186,15 @@ class GameState
 
       @playerX = 20
       @playerY = 20
-      @playerSpeed = 0
-      @playerRot = -67
 
-      @window.GetManager().ChangeState(4)
+      #Speed, rot, you fault, railing, armor level, health, car
+      @window.SetGameFlags(@playerSpeed, @playerRot, @isItKnown, true, @window.GetGameFlags(4), @window.GetGameFlags(5), @window.GetGameFlags(6))
+
+      # Reset
+      @playerRot = -67.5
+      @playerSpeed = 0
+
+      @window.GetManager().ChangeState(2)
     end
 
     MoveCars()
@@ -193,10 +202,6 @@ class GameState
 
   def Draw()
     Gosu::draw_quad(0, 0, 0xff_ffffff, 500, 0, 0xff_ffffff, 500, 500, 0xff_ffffff, 0, 500, 0xff_ffffff, 0)
-
-    @nano.draw("Speed: " + (@playerSpeed*10).to_s() + " KMH", 10, 0, 0, 1, 1, 0xff_000000)
-    @nano.draw("Interstate " + @interstate.to_s(), 10, 500-43, 0, 1, 1, 0xff_000000)
-
 
     # Draw each car
     @arrayOfCars.size.times do |n|
@@ -206,16 +211,15 @@ class GameState
     #Draw player
     @cars[@playerCarID].draw_rot(@playerX, @playerY, 0, @playerRot*180/3.141593-90, 0.5, 0.5, 2, 2)
 
+    @nano.draw("Speed: " + (@playerSpeed*10).to_s() + " KMH", 10, 0, 0, 1, 1, 0xff_000000)
+    @nano.draw("Interstate " + @interstate.to_s(), 10, 500-43, 0, 1, 1, 0xff_000000)
+
   end
 
   def ButtonDown(id)
     # Escape key
     if id == 41
-      # Byt till pause staten!
-      @playerX = 20
-      @playerY = 20
-
-      @window.GetManager().ChangeState(4) # Byt om du måste!
+      @window.GetManager().ChangeState(1)
     end
 
     if id == 21

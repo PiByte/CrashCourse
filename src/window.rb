@@ -14,6 +14,11 @@ class Window < Gosu::Window
     # Enable retrofication
     Gosu::enable_undocumented_retrofication()
 
+    # Final data after crash
+    # Speed, rot, you fault, railing, armor level, health, car
+    @gameFlags = [0, 0, false, false, 0, false, false]
+
+
     @manager = Statemanager.new()
 
     @menu = MenuState.new(self)
@@ -22,10 +27,12 @@ class Window < Gosu::Window
     @shop = ShopState.new(self)
     @gameover = GameoverState.new(self)
     @dialog = DialogState.new(self)
+    @pause = PauseState.new(self)
 
     @manager.AddState(@gameover)
     @manager.AddState(@shop)
     @manager.AddState(@hospital)
+    @manager.AddState(@pause)
     @manager.AddState(@game)
     @manager.AddState(@dialog)
     @manager.AddState(@menu)
@@ -59,6 +66,18 @@ class Window < Gosu::Window
 
   def GetManager()
     return @manager
+  end
+
+  def SetGameFlags(speed, rot, fault, railing, armor, health, car)
+    @gameFlags = [speed, rot, fault, railing, armor, health, car]
+  end
+
+  def GetGameFlags(num)
+    if num == 0
+      return @gameFlags
+    else
+      return @gameFlags[num]
+    end
   end
 
   #def GetDialog(num)

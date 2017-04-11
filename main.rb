@@ -12,6 +12,7 @@ require "./src/states/hospital.rb"
 require "./src/states/shop.rb"
 require "./src/states/gameover.rb"
 require "./src/states/dialog.rb"
+require "./src/states/pause.rb"
 
 # Other
 
