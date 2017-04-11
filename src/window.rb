@@ -1,13 +1,9 @@
-
-$Version = 0.00
+$Version = 0.01
 $WindowHeight = 500
 $WindowWidth = 500
 $WindowTitle = "Crash Course"
 
 puts "Crash Course - Version " + $Version.to_s()
-
-
-
 
 class Window < Gosu::Window
   def initialize()
@@ -35,7 +31,7 @@ class Window < Gosu::Window
     @manager.AddState(@menu)
 
     # Byt ut den här så att man kan byta språk via settingsfilen (och lägg till en settings state)
-    @dialog = 0
+  #  @dialog = 0
 
   #  f = File.open("./res/lang/EN", "r")
   #  @dialog = f.read().split("*")
@@ -44,6 +40,12 @@ class Window < Gosu::Window
   end
 
   def update()
+    if @manager.FirstFrame(0)
+      puts "Running Setup"
+      @manager.GetState().Setup()
+      @manager.FirstFrame(1)
+    end
+
     @manager.GetState().Update()
   end
 
@@ -53,10 +55,6 @@ class Window < Gosu::Window
 
   def button_down(id)
     @manager.GetState().ButtonDown(id)
-  end
-
-  def button_up(id)
-    @manager.GetState().ButtonUp(id)
   end
 
   def GetManager()

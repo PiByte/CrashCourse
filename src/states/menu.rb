@@ -22,7 +22,7 @@ class MenuState
   end
 
   def Setup()
-    @music.play(true)
+    @toolTip = true
   end
 
   def Update()
@@ -73,10 +73,6 @@ class MenuState
         @window.close! # Exiting game!
       end
     end
-  end
-
-  def ButtonUp(id)
-
   end
 
   def GenerateCar()

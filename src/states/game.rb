@@ -1,3 +1,38 @@
+class Car
+  # Car class!
+  def initialize(x, y, id)
+    @x = x;
+    @y = y;
+    @id = id;
+    @speed = Random.rand(4..8)
+  end
+
+  def GetID()
+    return @id
+  end
+
+  def X()
+    return @x
+  end
+
+  def Y()
+    return @y
+  end
+
+  def Move(num)
+    @x += num
+  end
+
+  def Reset()
+    @x = -30
+    @y = Random.rand(500)
+  end
+
+  def GetSpeed()
+    return @speed
+  end
+
+end
 
 class GameState
   def initialize(window)
@@ -8,81 +43,184 @@ class GameState
 
     @playerSpeed = 0
 
-    @playerTopSpeed = 15
+    # Car properties
+    @playerCarID = 23
+    @playerTopSpeed = 10
+    @playerAccRate = 0.5
+    @playerDecRate = 1
+    @playerTurnSpeed = 0.1
 
-    @playerX = 50
-    @playerY = 50
+    @playerX = 20
+    @playerY = 20
 
-    @playerSlowingDown = false
+    @playerRot = -67
+
+    @isItKnown = false
+
+    @interstate = Random.rand(1190)
+
+    @arrayOfCars
+    @otherCarsSpeed = 5
 
   end
 
   def Setup()
+    # Generate random cars
+    RandomCars()
+  end
+
+  def RandomCars()
+    @arrayOfCars = Array.new()
+
+    num = Random.rand(1..4)
+
+    puts "# of cars: " + num.to_s()
+
+    num.times do
+      temp = Car.new(Random.rand(450), Random.rand(450), GenerateCar())
+      @arrayOfCars.push(temp)
+    end
+  end
+
+  def GenerateCar()
+    newNum = Random.rand(55)
+
+    if newNum > 5 && newNum < 10 || newNum > 15 && newNum < 20 || newNum > 25 && newNum < 30 || newNum > 35 && newNum < 40 || newNum > 45 && newNum < 50
+      newNum -= 4
+    end
+
+    return newNum
+  end
+
+  def MoveCars()
+
+    @arrayOfCars.size.times do |n|
+      @arrayOfCars[n].Move(@arrayOfCars[n].GetSpeed())
+
+      if @arrayOfCars[n].X > 530
+        @arrayOfCars[n].Reset()
+      end
+    end
 
   end
 
   def Update()
 
-    if @window.button_down?(82) == true
-      @playerX += @playerSpeed
-
-      if (@playerSpeed < @playerTopSpeed)
-        @playerSpeed += 0.5
-      end
-
-    end
-
-    if @window.button_down?(81) == true
-      @playerX -= @playerSpeed
-
-      if (@playerSpeed < @playerTopSpeed)
-        @playerSpeed += 0.5
-      end
-
-    end
-
-
-    if @playerSlowingDown == true
-      @playerX += @playerSpeed
-
-      if (@playerSpeed > 0)
-        @playerSpeed -= 0.5
+    if @window.button_down?(82) == true && @playerSpeed < @playerTopSpeed
+      if @playerSpeed < 0
+        @playerSpeed += @playerDecRate
       else
-        @playerSlowingDown = false
+        @playerSpeed += @playerAccRate
       end
-
     end
 
-    if @playerX > 525
-      @playerX = -25
+    if @window.button_down?(81) == true && @playerSpeed >- @playerTopSpeed
+      if @playerSpeed < 0
+        @playerSpeed -= @playerDecRate
+      else
+        @playerSpeed -= @playerAccRate
+      end
+    end
+
+    if @window.button_down?(81) == false && @window.button_down?(82) == false
+      if @playerSpeed - @playerDecRate > 0
+        @playerSpeed -= @playerDecRate
+      elsif @playerSpeed + @playerDecRate < 0
+        @playerSpeed += @playerDecRate
+      else
+        @playerSpeed = 0
+      end
+    end
+
+    if @window.button_down?(79) == true && @playerSpeed != 0
+      @playerRot += @playerTurnSpeed * @playerSpeed/@playerTopSpeed
+    end
+
+    if @window.button_down?(80) == true && @playerSpeed != 0
+      @playerRot -= @playerTurnSpeed * @playerSpeed/@playerTopSpeed
+    end
+
+    @playerX += Math.sin(@playerRot) * @playerSpeed
+    @playerY -= Math.cos(@playerRot) * @playerSpeed
+
+    # Check for collision with each car
+
+    @arrayOfCars.size.times do |n|
+
+      if @window.Touching(@arrayOfCars[n].X+24, @arrayOfCars[n].Y+16, 24, 16, @playerX, @playerY, 24, 16) == true
+
+        puts "Car crash at " + (@playerSpeed*10).to_s() + " KMH"
+
+        @playerX = 20
+        @playerY = 20
+        @playerSpeed = 0
+        @playerRot = -67
+
+        @window.GetManager().ChangeState(4)
+      end
     end
 
 
+    if @playerX > 530
+      # New page
+      RandomCars()
+
+      @playerX = -30
+    end
+
+    if @playerX < -30
+      # New page
+      RandomCars()
+
+      @isItKnown = true
+      @playerX = 530
+    end
+
+
+    if @playerY > 530 || @playerY < -30
+      puts "Railing crash at " + (@playerSpeed*10).to_s() + " KMH"
+
+      @playerX = 20
+      @playerY = 20
+      @playerSpeed = 0
+      @playerRot = -67
+
+      @window.GetManager().ChangeState(4)
+    end
+
+    MoveCars()
   end
 
   def Draw()
     Gosu::draw_quad(0, 0, 0xff_ffffff, 500, 0, 0xff_ffffff, 500, 500, 0xff_ffffff, 0, 500, 0xff_ffffff, 0)
 
-    @nano.draw("Speed: " + @playerSpeed.to_s(), 10, 5, 0, 1, 1, 0xff_000000)
+    @nano.draw("Speed: " + (@playerSpeed*10).to_s() + " KMH", 10, 0, 0, 1, 1, 0xff_000000)
+    @nano.draw("Interstate " + @interstate.to_s(), 10, 500-43, 0, 1, 1, 0xff_000000)
 
-    @cars[1].draw(@playerX, @playerY, 0, 2, 2)
 
+    # Draw each car
+    @arrayOfCars.size.times do |n|
+      @cars[@arrayOfCars[n].GetID()].draw(@arrayOfCars[n].X, @arrayOfCars[n].Y, 0, 2, 2)
+    end
+
+    #Draw player
+    @cars[@playerCarID].draw_rot(@playerX, @playerY, 0, @playerRot*180/3.141593-90, 0.5, 0.5, 2, 2)
 
   end
 
   def ButtonDown(id)
-
-
-
     # Escape key
     if id == 41
+      # Byt till pause staten!
+      @playerX = 20
+      @playerY = 20
+
       @window.GetManager().ChangeState(4) # Byt om du måste!
     end
-  end
 
-  def ButtonUp(id)
-    if id == 82
-      @playerSlowingDown = true
+    if id == 21
+      @playerX = 20
+      @playerY = 20
     end
   end
 end
