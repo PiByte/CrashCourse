@@ -37,6 +37,8 @@ class Window < Gosu::Window
     @manager.AddState(@dialog)
     @manager.AddState(@menu)
 
+    
+
     # Byt ut den här så att man kan byta språk via settingsfilen (och lägg till en settings state)
   #  @dialog = 0
 

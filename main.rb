@@ -15,7 +15,8 @@ require "./src/states/dialog.rb"
 require "./src/states/pause.rb"
 
 # Other
-
+require "./src/obj/cars.rb"
+require "./src/obj/player.rb"
 
 # Starts game
 Window.new.show()
