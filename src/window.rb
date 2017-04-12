@@ -14,9 +14,10 @@ class Window < Gosu::Window
     # Enable retrofication
     Gosu::enable_undocumented_retrofication()
 
-    # Final data after crash
-    # Speed, rot, you fault, railing, armor level, health, car
-    @gameFlags = [0, 0, false, false, 0, false, false]
+
+    # New game flags!
+    # speed, rot, fault, railing, armor, health, car, money, How Close to death
+  @gameFlags = [0, 0, 0, 0, 0, 0, 0, 0, 0]
 
 
     @manager = Statemanager.new()
@@ -70,16 +71,16 @@ class Window < Gosu::Window
     return @manager
   end
 
-  def SetGameFlags(speed, rot, fault, railing, armor, health, car)
-    @gameFlags = [speed, rot, fault, railing, armor, health, car]
+  def SetGameFlag(cell, value)
+    @gameFlags[cell] = value
+    end
+
+  def GetGameCell(num)
+      return @gameFlags[num]
   end
 
-  def GetGameFlags(num)
-    if num == 0
-      return @gameFlags
-    else
-      return @gameFlags[num]
-    end
+  def ResetGameFlags()
+    @gameFlags = [0, 0, 0, 0, 0, 0, 0, 0, 0]
   end
 
   #def GetDialog(num)

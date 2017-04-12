@@ -17,7 +17,7 @@ class Player
 
     @playerRot = -67
 
-    @isItKnown = false
+    @yourFault = 0
 
   end
 
@@ -90,11 +90,12 @@ class Player
     @playerSpeed = speed
   end
 
-  def IsItKnown(yesOrNo)
-    if yesOrNo == false
-      return @isItKnown
-    else
-      @isItKnown == yesOrNo
-    end
+  def YourFault()
+    return @yourFault
   end
+
+  def SetYourFault(value)
+    @yourFault = value
+  end
+
 end

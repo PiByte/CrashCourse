@@ -53,6 +53,10 @@ class Car
     return @y
   end
 
+  def GetSpeed()
+    return @speed
+  end
+
   def Move()
     # Move car and reset
     @x += @speed

@@ -1,4 +1,6 @@
-class MenuState
+class SettingsState
+    # Lägg till och ta bort skit
+
   def initialize(window)
     @window = window
 
@@ -14,8 +16,10 @@ class MenuState
     @toolTip = true
 
     @carID = 0
-    
-    # Whateverz
+
+  #  @titleStr = @window.GetDialog(0)
+  #  @startStr = @window.GetDialog(1)
+  #  @exitStr = @window.GetDialog(2)
 
   end
 
@@ -33,10 +37,9 @@ class MenuState
     Gosu::draw_quad(0, 0, 0xffffffff, 500, 0, 0xffffffff, 500, 500, 0xffffffff, 0, 500, 0xffffffff, 0)
 
     # Draws menu
-    @vcr.draw("Crash Course", 10, 10, 0, 1, 1, 0xff_000000)
-    @nano.draw("Start Game", 60, 100, 0, 1, 1, 0xff_000000)
-    @nano.draw("qUiT", 60, 150, 0, 1, 1, 0xff_000000) # LOL, the Nanotype font doens't support lowercase characters, so I can type whatever I want!
-    @nano.draw("Copyright (c) Jacob Johansson 2017", 90, 500-36, 0, 1, 1, 0xff_000000)
+    @vcr.draw("Pause", 10, 10, 0, 1, 1, 0xff_000000)
+    @nano.draw("Continue", 60, 100, 0, 1, 1, 0xff_000000)
+    @nano.draw("Quit to menu", 60, 150, 0, 1, 1, 0xff_000000)
 
     # Tooltip
     if @toolTip == true
@@ -66,9 +69,9 @@ class MenuState
     end
     if id == 40
       if @carPos == 0
-        @window.GetManager().ChangeState(2) # Bytar till spel istället för dialogen, ÄNDRA!
+        @window.GetManager().ChangeState(6) # Continue game
       elsif @carPos == 1
-        @window.close! # Exiting game!
+        @window.GetManager().ChangeState(4) # Exiting game!
       end
     end
   end

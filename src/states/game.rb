@@ -12,7 +12,7 @@ class GameState
   def Setup()
 
     # Creates player
-    @player = Player.new(@window, 24, 15, 0.5, 0.2, 0.1)
+    @player = Player.new(@window, 40, 8, 0.05, 0.1, 0.1)
 
     # Generate random cars
     @carManager = CarManager.new(@window, 4)
@@ -28,15 +28,11 @@ class GameState
     @carManager.GetArraySize.times do |n|
 
       if @window.Touching(@carManager.GetCar(n).X()+24, @carManager.GetCar(n).Y()+16, 24, 16, @player.X(), @player.Y(), 24, 16) == true
-        puts "Car crash at " + (@player.GetSpeed*10).to_s() + " KMH"
+        puts "Car crash at " + (@player.GetSpeed*10).round().to_s() + " KMH"
 
-        @window.SetGameFlags(@player.GetSpeed, @player.GetRot, @player.IsItKnown(false), false, @window.GetGameFlags(4), @window.GetGameFlags(5), @window.GetGameFlags(6))
-
-        # Reset player
-        @player.Reset(20, 20, -67.5, 0)
-
-        # Change state
-        @window.GetManager().ChangeState(2)
+        @window.SetGameFlag(8, (@player.GetSpeed*10).round())
+        
+        Crash()
       end
 
     end
@@ -54,23 +50,21 @@ class GameState
       # New page
       @carManager = CarManager.new(@window, 4)
 
-      @player.IsItKnown(true)
+      @player.SetYourFault(1)
       @player.Reset(530, @player.Y, @player.GetRot, @player.GetSpeed)
     end
 
 
     if @player.Y > 530 || @player.Y < -30
-      puts "Railing crash at " + (@player.GetSpeed*10).to_s() + " KMH"
+      puts "Railing crash at " + (@player.GetSpeed*10).round().to_s() + " KMH"
 
 
-      #Speed, rot, you fault, railing, armor level, health, car
-      @window.SetGameFlags(@player.GetSpeed, @player.GetRot, @player.IsItKnown(false), false, @window.GetGameFlags(4), @window.GetGameFlags(5), @window.GetGameFlags(6))
+      @window.SetGameFlag(8, (@player.GetSpeed*10).round())
 
-      # Reset
-      @player.Reset(20, 20, -67.5, 0)
+      @window.SetGameFlag(3, 1)
 
-      # Change state
-      @window.GetManager().ChangeState(2)
+      Crash()
+
     end
 
     # Move cars
@@ -92,9 +86,23 @@ class GameState
     #Draw player
     @cars[@player.GetID()].draw_rot(@player.X, @player.Y, 0, @player.GetRot*180/3.141593-90, 0.5, 0.5, 2, 2)
 
-    @nano.draw("Speed: " + (@player.GetSpeed*10).to_s() + " KMH", 10, 0, 0, 1, 1, 0xff_000000)
+    @nano.draw("Speed: " + (@player.GetSpeed*10).round().to_s() + " KMH", 10, 0, 0, 1, 1, 0xff_000000)
     @nano.draw("Interstate " + @interstate.to_s(), 10, 500-43, 0, 1, 1, 0xff_000000)
 
+  end
+
+  def Crash()
+    
+    # Change gameflags
+    @window.SetGameFlag(0, @player.GetSpeed)
+    @window.SetGameFlag(1, @player.GetRot)
+    @window.SetGameFlag(2, @player.YourFault())
+
+    # Reset
+    @player.Reset(20, 20, -67.5, 0)
+
+    # Change state
+    @window.GetManager().ChangeState(2)
   end
 
   def ButtonDown(id)

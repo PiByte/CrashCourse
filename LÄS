@@ -1,1 +1,3 @@
 Du borde porta spelet till C++ och SFML... när du blir klar med spelet
+
+Och när du gör om spelet, gör så att man kan byta state genom att skriva in ett namn eller ett ID nummer, istället för ditt jävla "cycles" system
